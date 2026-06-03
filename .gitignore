@@ -1,0 +1,66 @@
+# Node & NestJS
+node_modules/
+/dist/
+/.next/
+/.cache/
+
+# Logs
+npm-debug.log*
+*.log
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.*
+
+# Build output
+coverage/
+*.tsbuildinfo
+
+# IDEs & editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# OS files
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Miscellaneous
+*.pem
+*.key
+*.crt
+
+# Sensitive configuration files
+src/**/*.env
+
+# Test files not needed in repo
+test-api.http
+
+# Postman collection (local only)
+erp_interne_postman_collection.json
+
+# Optional runtime files
+tmp/
+*.tgz
+
+# NestJS specific
+npm-debug.log
+
+# Optional npm cache folder
+.npm
+
+# VS Code settings folder
+.vscode/
+
+# Typescript compilation artefacts
+*.js.map
+
+# Yarn integrity files
+.yarn-integrity
