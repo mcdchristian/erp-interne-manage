@@ -1,5 +1,6 @@
 # 🏢 Internal ERP - Management (Backend)
 
+**Author:** Del'or Mutaliko
 <p align="center">
   <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" alt="NestJS" />
   <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
@@ -46,7 +47,7 @@ The project is structured into multiple layers adhering to Clean Architecture:
 ### 1. Installation
 Clone the repository and install the dependencies:
 ```bash
-git clone <your-repo>
+git clone https://github.com/mcdchristian/erp-interne-manage.git
 cd erp-interne-gestion
 npm install
 ```
