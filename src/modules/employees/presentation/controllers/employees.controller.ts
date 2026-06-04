@@ -30,11 +30,13 @@ export class EmployeesController {
   }
 
   @Get()
+  @Roles('ADMIN', 'MANAGER')
   findAll() {
     return this.employeesService.findAll();
   }
 
   @Get(':id')
+  @Roles('ADMIN', 'MANAGER')
   findOne(@Param('id') id: string) {
     return this.employeesService.findOne(id);
   }
