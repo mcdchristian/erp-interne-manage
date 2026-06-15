@@ -8,6 +8,7 @@ import { Leave, LeaveStatus } from '../../domain/entities/leave.entity';
 import { ILeaveRepository } from '../../domain/repositories/leave.repository.interface';
 import { CreateLeaveDto } from '../dto/create-leave.dto';
 import { UpdateLeaveStatusDto } from '../dto/update-leave-status.dto';
+import { PaginationDto } from '../../../../common/dto/pagination.dto';
 import { IEmployeeRepository } from '../../../../modules/employees/domain/repositories/employee.repository.interface';
 
 @Injectable()
@@ -50,8 +51,18 @@ export class LeavesService {
     return this.leaveRepository.save(newLeave);
   }
 
-  async findAll(): Promise<Leave[]> {
-    return this.leaveRepository.findAll();
+  async findAll(paginationDto: PaginationDto): Promise<{ data: Leave[]; total: number; page: number; limit: number }> {
+    const { page = 1, limit = 10 } = paginationDto;
+    const offset = (page - 1) * limit;
+
+    const [data, total] = await this.leaveRepository.findAllPaginated(limit, offset);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
   async findOne(id: string): Promise<Leave> {

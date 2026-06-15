@@ -49,6 +49,18 @@ export class EmployeeRepository implements IEmployeeRepository {
     return entities.map((entity) => this.mapToDomain(entity));
   }
 
+  async findAllPaginated(
+    limit: number,
+    offset: number,
+  ): Promise<[Employee[], number]> {
+    const [entities, count] = await this.repository.findAndCount({
+      skip: offset,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+    return [entities.map((entity) => this.mapToDomain(entity)), count];
+  }
+
   async findById(id: string): Promise<Employee | null> {
     const entity = await this.repository.findOne({ where: { id } });
     return entity ? this.mapToDomain(entity) : null;

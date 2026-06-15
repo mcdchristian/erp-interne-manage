@@ -4,6 +4,7 @@ import { Employee, EmployeeRole } from '../../domain/entities/employee.entity';
 import { IEmployeeRepository } from '../../domain/repositories/employee.repository.interface';
 import { CreateEmployeeDto } from '../dto/create-employee.dto';
 import { UpdateEmployeeDto } from '../dto/update-employee.dto';
+import { PaginationDto } from '../../../../common/dto/pagination.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -38,8 +39,18 @@ export class EmployeesService {
     return this.employeeRepository.save(newEmployee);
   }
 
-  async findAll(): Promise<Employee[]> {
-    return this.employeeRepository.findAll();
+  async findAll(paginationDto: PaginationDto): Promise<{ data: Employee[]; total: number; page: number; limit: number }> {
+    const { page = 1, limit = 10 } = paginationDto;
+    const offset = (page - 1) * limit;
+
+    const [data, total] = await this.employeeRepository.findAllPaginated(limit, offset);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
   async findOne(id: string): Promise<Employee> {

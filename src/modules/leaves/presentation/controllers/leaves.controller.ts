@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { LeavesService } from '../../application/services/leaves.service';
@@ -15,6 +16,7 @@ import { UpdateLeaveStatusDto } from '../../application/dto/update-leave-status.
 import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
+import { PaginationDto } from '../../../../common/dto/pagination.dto';
 
 @ApiTags('Leaves')
 @ApiBearerAuth()
@@ -29,8 +31,8 @@ export class LeavesController {
   }
 
   @Get()
-  findAll() {
-    return this.leavesService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.leavesService.findAll(paginationDto);
   }
 
   @Get(':id')
