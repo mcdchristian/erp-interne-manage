@@ -1,10 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Sécurité: Protéger les en-têtes HTTP
+  app.use(helmet());
+
+  // Sécurité: Activer CORS (Cross-Origin Resource Sharing)
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || '*', // À restreindre en production
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
   // Enable validation globally for all DTOs
   app.useGlobalPipes(
@@ -15,10 +28,17 @@ async function bootstrap() {
     }),
   );
 
+  // Activer le filtre d'exceptions global
+  app.useGlobalFilters(new AllExceptionsFilter());
+
+  // Activer l'intercepteur de réponses global
+  app.useGlobalInterceptors(new TransformInterceptor());
+
   const config = new DocumentBuilder()
     .setTitle('ERP Interne API')
     .setDescription('API backend modulaire pour la gestion des employés, des congés et des rapports')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, documentFactory);

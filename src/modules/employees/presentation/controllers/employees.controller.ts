@@ -7,14 +7,16 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { EmployeesService } from '../../application/services/employees.service';
 import { CreateEmployeeDto } from '../../application/dto/create-employee.dto';
 import { UpdateEmployeeDto } from '../../application/dto/update-employee.dto';
 import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
+import { PaginationDto } from '../../../../common/dto/pagination.dto';
 
 @ApiTags('Employees')
 @ApiBearerAuth()
@@ -25,14 +27,18 @@ export class EmployeesController {
 
   @Post()
   @Roles('ADMIN')
+  @ApiOperation({ summary: 'Create a new employee' })
+  @ApiCreatedResponse({ description: 'The employee has been successfully created.' })
   create(@Body() createEmployeeDto: CreateEmployeeDto) {
     return this.employeesService.create(createEmployeeDto);
   }
 
   @Get()
   @Roles('ADMIN', 'MANAGER')
-  findAll() {
-    return this.employeesService.findAll();
+  @ApiOperation({ summary: 'Get all employees with pagination' })
+  @ApiOkResponse({ description: 'Return paginated employees.' })
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.employeesService.findAll(paginationDto);
   }
 
   @Get(':id')

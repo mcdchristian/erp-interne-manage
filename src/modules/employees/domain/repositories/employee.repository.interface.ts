@@ -4,6 +4,7 @@ export const IEmployeeRepository = Symbol('IEmployeeRepository');
 
 export interface IEmployeeRepository {
   findAll(): Promise<Employee[]>;
+  findAllPaginated(limit: number, offset: number): Promise<[Employee[], number]>;
   findById(id: string): Promise<Employee | null>;
   findByEmail(email: string): Promise<Employee | null>;
   save(employee: Employee): Promise<Employee>;

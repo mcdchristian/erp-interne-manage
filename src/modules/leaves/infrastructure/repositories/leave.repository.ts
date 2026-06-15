@@ -45,6 +45,18 @@ export class LeaveRepository implements ILeaveRepository {
     return entities.map((entity) => this.mapToDomain(entity));
   }
 
+  async findAllPaginated(
+    limit: number,
+    offset: number,
+  ): Promise<[Leave[], number]> {
+    const [entities, count] = await this.repository.findAndCount({
+      skip: offset,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+    return [entities.map((entity) => this.mapToDomain(entity)), count];
+  }
+
   async findById(id: string): Promise<Leave | null> {
     const entity = await this.repository.findOne({ where: { id } });
     return entity ? this.mapToDomain(entity) : null;

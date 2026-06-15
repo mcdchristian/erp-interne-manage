@@ -4,6 +4,7 @@ export const ILeaveRepository = Symbol('ILeaveRepository');
 
 export interface ILeaveRepository {
   findAll(): Promise<Leave[]>;
+  findAllPaginated(limit: number, offset: number): Promise<[Leave[], number]>;
   findById(id: string): Promise<Leave | null>;
   findByEmployeeId(employeeId: string): Promise<Leave[]>;
   save(leave: Leave): Promise<Leave>;
