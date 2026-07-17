@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
 import { PaginationDto } from '../../../../common/dto/pagination.dto';
+import { EmployeeRole } from '../../domain/entities/employee.entity';
 
 @ApiTags('Employees')
 @ApiBearerAuth()
@@ -26,7 +27,7 @@ export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   @Post()
-  @Roles('ADMIN')
+  @Roles(EmployeeRole.ADMIN)
   @ApiOperation({ summary: 'Create a new employee' })
   @ApiCreatedResponse({ description: 'The employee has been successfully created.' })
   create(@Body() createEmployeeDto: CreateEmployeeDto) {
@@ -34,7 +35,7 @@ export class EmployeesController {
   }
 
   @Get()
-  @Roles('ADMIN', 'MANAGER')
+  @Roles(EmployeeRole.ADMIN, EmployeeRole.MANAGER)
   @ApiOperation({ summary: 'Get all employees with pagination' })
   @ApiOkResponse({ description: 'Return paginated employees.' })
   findAll(@Query() paginationDto: PaginationDto) {
@@ -42,13 +43,19 @@ export class EmployeesController {
   }
 
   @Get(':id')
-  @Roles('ADMIN', 'MANAGER')
+  @Roles(EmployeeRole.ADMIN, EmployeeRole.MANAGER)
+  @ApiOperation({ summary: 'Get a single employee by ID' })
+  @ApiOkResponse({ description: 'Return the employee.' })
+  @ApiNotFoundResponse({ description: 'Employee not found.' })
   findOne(@Param('id') id: string) {
     return this.employeesService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles('ADMIN')
+  @Roles(EmployeeRole.ADMIN)
+  @ApiOperation({ summary: 'Update an employee' })
+  @ApiOkResponse({ description: 'The employee has been successfully updated.' })
+  @ApiNotFoundResponse({ description: 'Employee not found.' })
   update(
     @Param('id') id: string,
     @Body() updateEmployeeDto: UpdateEmployeeDto,
@@ -57,7 +64,10 @@ export class EmployeesController {
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
+  @Roles(EmployeeRole.ADMIN)
+  @ApiOperation({ summary: 'Delete an employee' })
+  @ApiOkResponse({ description: 'The employee has been successfully deleted.' })
+  @ApiNotFoundResponse({ description: 'Employee not found.' })
   remove(@Param('id') id: string) {
     return this.employeesService.remove(id);
   }

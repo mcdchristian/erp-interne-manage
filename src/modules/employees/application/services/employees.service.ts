@@ -76,11 +76,11 @@ export class EmployeesService {
     }
 
     // Build a typed patch object from the DTO, converting date strings to Date
-  const { hireDate, ...rest } = updateEmployeeDto as Partial<UpdateEmployeeDto>;
-const patch: Partial<Employee> = {
-  ...(rest as Partial<Employee>),
-  ...(hireDate ? { hireDate: new Date(hireDate as unknown as string) } : {}),
-};
+    const { hireDate, ...rest } = updateEmployeeDto as Partial<UpdateEmployeeDto>;
+    const patch: Partial<Employee> = {
+      ...(rest as Partial<Employee>),
+      ...(hireDate ? { hireDate: new Date(hireDate as unknown as string) } : {}),
+    };
 
     const updatedEmployee = await this.employeeRepository.update(id, patch);
     if (!updatedEmployee) {
