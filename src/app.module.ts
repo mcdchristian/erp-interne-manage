@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -18,6 +19,9 @@ import { AuthModule } from './modules/auth/auth.module';
       isGlobal: true,
       envFilePath: '.env',
       validationSchema: Joi.object({
+        NODE_ENV: Joi.string()
+          .valid('development', 'production', 'test')
+          .default('development'),
         PORT: Joi.number().default(3000),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.number().default(5432),
@@ -27,6 +31,7 @@ import { AuthModule } from './modules/auth/auth.module';
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION: Joi.string().default('1h'),
         FRONTEND_URL: Joi.string().uri().optional(),
+        DB_SYNC: Joi.boolean().default(false),
       }),
     }),
     TypeOrmModule.forRootAsync({
@@ -38,6 +43,7 @@ import { AuthModule } from './modules/auth/auth.module';
       ttl: 60000,
       limit: 100,
     }]),
+    CacheModule.register({ isGlobal: true }),
     AuthModule,
     EmployeesModule,
     LeavesModule,

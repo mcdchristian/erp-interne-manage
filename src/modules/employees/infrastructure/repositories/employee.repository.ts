@@ -14,7 +14,6 @@ export class EmployeeRepository implements IEmployeeRepository {
 
   private mapToDomain(entity: EmployeeTypeOrmEntity): Employee {
     return new Employee(
-      entity.id,
       entity.firstName,
       entity.lastName,
       entity.email,
@@ -23,6 +22,7 @@ export class EmployeeRepository implements IEmployeeRepository {
       entity.hireDate,
       entity.role as any,
       entity.passwordHash,
+      entity.id,
       entity.createdAt,
       entity.updatedAt,
     );
