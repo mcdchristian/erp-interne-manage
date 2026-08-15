@@ -11,5 +11,5 @@ export const getTypeOrmConfig = (
   password: configService.get<string>('DB_PASSWORD', 'postgres'),
   database: configService.get<string>('DB_NAME', 'erp_interne'),
   entities: [__dirname + '/../**/*.typeorm-entity{.ts,.js}'],
-  synchronize: configService.get<boolean>('DB_SYNC', true), // Warning: Set to false in production
+  synchronize: configService.get<boolean>('DB_SYNC', false),
 });

@@ -8,7 +8,9 @@ import {
   Delete,
   UseGuards,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { EmployeesService } from '../../application/services/employees.service';
 import { CreateEmployeeDto } from '../../application/dto/create-employee.dto';
@@ -36,6 +38,7 @@ export class EmployeesController {
 
   @Get()
   @Roles(EmployeeRole.ADMIN, EmployeeRole.MANAGER)
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Get all employees with pagination' })
   @ApiOkResponse({ description: 'Return paginated employees.' })
   findAll(@Query() paginationDto: PaginationDto) {
@@ -44,6 +47,7 @@ export class EmployeesController {
 
   @Get(':id')
   @Roles(EmployeeRole.ADMIN, EmployeeRole.MANAGER)
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Get a single employee by ID' })
   @ApiOkResponse({ description: 'Return the employee.' })
   @ApiNotFoundResponse({ description: 'Employee not found.' })
