@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,8 +32,8 @@ async function bootstrap() {
   // Activer le filtre d'exceptions global
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // Activer l'intercepteur de réponses global
-  app.useGlobalInterceptors(new TransformInterceptor());
+  // Activer les intercepteurs globaux (Logging et Transform de réponse)
+  app.useGlobalInterceptors(new LoggingInterceptor(), new TransformInterceptor());
 
   // Définir le préfixe global pour les routes d'API
   app.setGlobalPrefix('api/v1');
