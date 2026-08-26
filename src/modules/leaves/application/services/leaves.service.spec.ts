@@ -12,7 +12,6 @@ describe('LeavesService', () => {
   let employeeRepository: jest.Mocked<IEmployeeRepository>;
 
   const mockEmployee = new Employee(
-    'emp-123',
     'Jean',
     'Dupont',
     'jean.dupont@company.com',
@@ -21,6 +20,7 @@ describe('LeavesService', () => {
     new Date('2024-01-15'),
     EmployeeRole.EMPLOYEE,
     'hashedPassword',
+    'emp-123',
     new Date(),
     new Date(),
   );
