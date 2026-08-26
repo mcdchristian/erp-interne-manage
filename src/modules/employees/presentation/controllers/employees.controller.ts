@@ -18,6 +18,7 @@ import { UpdateEmployeeDto } from '../../application/dto/update-employee.dto';
 import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
+import { CurrentUser } from '../../../../common/decorators/current-user.decorator';
 import { PaginationDto } from '../../../../common/dto/pagination.dto';
 import { EmployeeRole } from '../../domain/entities/employee.entity';
 
@@ -34,6 +35,14 @@ export class EmployeesController {
   @ApiCreatedResponse({ description: 'The employee has been successfully created.' })
   create(@Body() createEmployeeDto: CreateEmployeeDto) {
     return this.employeesService.create(createEmployeeDto);
+  }
+
+  @Get('me')
+  @Roles(EmployeeRole.ADMIN, EmployeeRole.MANAGER, EmployeeRole.EMPLOYEE)
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiOkResponse({ description: 'Return the current employee profile.' })
+  getProfile(@CurrentUser() user: any) {
+    return this.employeesService.findOne(user.id);
   }
 
   @Get()
