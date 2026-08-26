@@ -34,6 +34,9 @@ async function bootstrap() {
   // Activer l'intercepteur de réponses global
   app.useGlobalInterceptors(new TransformInterceptor());
 
+  // Définir le préfixe global pour les routes d'API
+  app.setGlobalPrefix('api/v1');
+
   const config = new DocumentBuilder()
     .setTitle('ERP Interne API')
     .setDescription('API backend modulaire pour la gestion des employés, des congés et des rapports')
@@ -41,7 +44,7 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, documentFactory);
+  SwaggerModule.setup('api/v1/docs', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3000);
 }
