@@ -64,6 +64,23 @@ export class EmployeesController {
     return this.employeesService.findOne(id);
   }
 
+  @Patch('me')
+  @Roles(EmployeeRole.ADMIN, EmployeeRole.MANAGER, EmployeeRole.EMPLOYEE)
+  @ApiOperation({ summary: 'Update current user profile' })
+  @ApiOkResponse({ description: 'The profile has been successfully updated.' })
+  updateMe(
+    @CurrentUser() user: any,
+    @Body() updateEmployeeDto: UpdateEmployeeDto,
+  ) {
+    if (user.role !== EmployeeRole.ADMIN) {
+      delete updateEmployeeDto.role;
+      delete updateEmployeeDto.hireDate;
+      delete updateEmployeeDto.position;
+      delete updateEmployeeDto.department;
+    }
+    return this.employeesService.update(user.id, updateEmployeeDto);
+  }
+
   @Patch(':id')
   @Roles(EmployeeRole.ADMIN)
   @ApiOperation({ summary: 'Update an employee' })
