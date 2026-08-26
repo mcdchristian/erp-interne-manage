@@ -10,7 +10,7 @@ import {
   Query,
   ForbiddenException,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiForbiddenResponse, ApiParam } from '@nestjs/swagger';
 import { LeavesService } from '../../application/services/leaves.service';
 import { CreateLeaveDto } from '../../application/dto/create-leave.dto';
 import { UpdateLeaveStatusDto } from '../../application/dto/update-leave-status.dto';
@@ -31,6 +31,7 @@ export class LeavesController {
   @Post()
   @ApiOperation({ summary: 'Submit a new leave request' })
   @ApiCreatedResponse({ description: 'The leave request has been successfully created.' })
+  @ApiForbiddenResponse({ description: 'Authentification requise.' })
   create(
     @CurrentUser() user: any,
     @Body() createLeaveDto: CreateLeaveDto,
@@ -44,14 +45,17 @@ export class LeavesController {
   @Get()
   @ApiOperation({ summary: 'Get all leave requests with pagination' })
   @ApiOkResponse({ description: 'Return paginated leave requests.' })
+  @ApiForbiddenResponse({ description: 'Authentification requise.' })
   findAll(@Query() paginationDto: PaginationDto) {
     return this.leavesService.findAll(paginationDto);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a single leave request by ID' })
+  @ApiParam({ name: 'id', description: 'ID unique de la demande de congé (UUID)' })
   @ApiOkResponse({ description: 'Return the leave request.' })
   @ApiNotFoundResponse({ description: 'Leave request not found.' })
+  @ApiForbiddenResponse({ description: 'Accès refusé - Vous n\'avez pas la permission de voir ce congé.' })
   async findOne(
     @CurrentUser() user: any,
     @Param('id') id: string,
@@ -69,8 +73,10 @@ export class LeavesController {
 
   @Get('employee/:employeeId')
   @ApiOperation({ summary: 'Get all leave requests for a specific employee' })
+  @ApiParam({ name: 'employeeId', description: 'ID unique de l\'employé (UUID)' })
   @ApiOkResponse({ description: 'Return leave requests for the employee.' })
   @ApiNotFoundResponse({ description: 'Employee not found.' })
+  @ApiForbiddenResponse({ description: 'Accès refusé - Vous ne pouvez voir que vos propres demandes de congés.' })
   findByEmployee(
     @CurrentUser() user: any,
     @Param('employeeId') employeeId: string,
@@ -88,8 +94,10 @@ export class LeavesController {
   @Patch(':id/status')
   @Roles(EmployeeRole.ADMIN, EmployeeRole.MANAGER)
   @ApiOperation({ summary: 'Approve or reject a leave request' })
+  @ApiParam({ name: 'id', description: 'ID unique de la demande de congé (UUID)' })
   @ApiOkResponse({ description: 'The leave status has been updated.' })
   @ApiNotFoundResponse({ description: 'Leave request not found.' })
+  @ApiForbiddenResponse({ description: 'Accès refusé - Rôle ADMIN ou MANAGER requis.' })
   updateStatus(
     @Param('id') id: string,
     @Body() updateLeaveStatusDto: UpdateLeaveStatusDto,
@@ -100,8 +108,10 @@ export class LeavesController {
   @Delete(':id')
   @Roles(EmployeeRole.ADMIN)
   @ApiOperation({ summary: 'Delete a leave request' })
+  @ApiParam({ name: 'id', description: 'ID unique de la demande de congé à supprimer (UUID)' })
   @ApiOkResponse({ description: 'The leave request has been deleted.' })
   @ApiNotFoundResponse({ description: 'Leave request not found.' })
+  @ApiForbiddenResponse({ description: 'Accès refusé - Seul l\'administrateur peut supprimer une demande de congé.' })
   remove(@Param('id') id: string) {
     return this.leavesService.remove(id);
   }
