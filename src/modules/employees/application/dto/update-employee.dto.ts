@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsOptional, IsDateString, IsEnum } from 'class-validator';
+import { IsString, IsEmail, IsOptional, IsDateString, IsEnum, MinLength, Matches } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { EmployeeRole } from '../../domain/entities/employee.entity';
 
@@ -32,6 +32,15 @@ export class UpdateEmployeeDto {
   @IsDateString()
   @IsOptional()
   hireDate?: string;
+
+  @ApiPropertyOptional({ description: 'Nouveau mot de passe', example: 'NewPassword123!' })
+  @IsString()
+  @IsOptional()
+  @MinLength(8, { message: 'Le mot de passe doit contenir au moins 8 caractères' })
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message: 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, et un chiffre ou un caractère spécial',
+  })
+  password?: string;
 
   @ApiPropertyOptional({ description: 'Rôle de l\'employé', enum: EmployeeRole })
   @IsEnum(EmployeeRole)
