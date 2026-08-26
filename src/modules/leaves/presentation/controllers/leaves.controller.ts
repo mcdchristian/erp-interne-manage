@@ -16,6 +16,7 @@ import { UpdateLeaveStatusDto } from '../../application/dto/update-leave-status.
 import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
+import { CurrentUser } from '../../../../common/decorators/current-user.decorator';
 import { PaginationDto } from '../../../../common/dto/pagination.dto';
 import { EmployeeRole } from '../../../employees/domain/entities/employee.entity';
 
@@ -29,7 +30,13 @@ export class LeavesController {
   @Post()
   @ApiOperation({ summary: 'Submit a new leave request' })
   @ApiCreatedResponse({ description: 'The leave request has been successfully created.' })
-  create(@Body() createLeaveDto: CreateLeaveDto) {
+  create(
+    @CurrentUser() user: any,
+    @Body() createLeaveDto: CreateLeaveDto,
+  ) {
+    if (user.role !== EmployeeRole.ADMIN && user.role !== EmployeeRole.MANAGER) {
+      createLeaveDto.employeeId = user.id;
+    }
     return this.leavesService.create(createLeaveDto);
   }
 
