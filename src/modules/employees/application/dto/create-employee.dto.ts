@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsNotEmpty, IsDateString, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, IsDateString, IsOptional, IsEnum, MinLength, Matches } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EmployeeRole } from '../../domain/entities/employee.entity';
 
@@ -36,6 +36,10 @@ export class CreateEmployeeDto {
   @ApiProperty({ description: 'Mot de passe', example: 'Password123!' })
   @IsString()
   @IsNotEmpty()
+  @MinLength(8, { message: 'Le mot de passe doit contenir au moins 8 caractères' })
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message: 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, et un chiffre ou un caractère spécial',
+  })
   password: string;
 
   @ApiPropertyOptional({ description: 'Rôle de l\'employé', enum: EmployeeRole, default: EmployeeRole.EMPLOYEE })

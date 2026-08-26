@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiForbiddenResponse } from '@nestjs/swagger';
 import { ReportingService } from '../../application/services/reporting.service';
 import { JwtAuthGuard } from '../../../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
@@ -11,6 +11,7 @@ import { EmployeeRole } from '../../../employees/domain/entities/employee.entity
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(EmployeeRole.ADMIN, EmployeeRole.MANAGER)
+@ApiForbiddenResponse({ description: 'Accès refusé - Rôle ADMIN ou MANAGER requis.' })
 @UseInterceptors(CacheInterceptor)
 @Controller('reporting')
 export class ReportingController {

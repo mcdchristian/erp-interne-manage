@@ -126,6 +126,18 @@ describe('EmployeesService', () => {
       expect(result.firstName).toBe('Jane');
     });
 
+    it('should hash password when updating password', async () => {
+      repository.findById.mockResolvedValue(mockEmployee);
+      repository.findByEmail.mockResolvedValue(null);
+      repository.update.mockResolvedValue({ ...mockEmployee, passwordHash: 'newHashedPassword' });
+
+      (bcrypt.genSalt as jest.Mock).mockResolvedValue('salt' as never);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('newHashedPassword' as never);
+
+      await service.update('uuid-123', { password: 'newPassword123!' });
+      expect(repository.update).toHaveBeenCalledWith('uuid-123', expect.objectContaining({ passwordHash: 'newHashedPassword' }));
+    });
+
     it('should throw ConflictException if new email is taken', async () => {
       repository.findById.mockResolvedValue(mockEmployee);
       repository.findByEmail.mockResolvedValue({ ...mockEmployee, id: 'other-id' });

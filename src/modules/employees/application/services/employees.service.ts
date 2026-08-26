@@ -74,10 +74,19 @@ export class EmployeesService {
     }
 
     // Build a typed patch object from the DTO, converting date strings to Date
-    const { hireDate, ...rest } = updateEmployeeDto as Partial<UpdateEmployeeDto>;
+    const { hireDate, password, ...rest } = updateEmployeeDto as Partial<UpdateEmployeeDto & { password?: string }>;
+    
+    let hashedPassword;
+    if (password) {
+      const saltRounds = 10;
+      const salt = await bcrypt.genSalt(saltRounds);
+      hashedPassword = await bcrypt.hash(password, salt);
+    }
+
     const patch: Partial<Employee> = {
       ...(rest as Partial<Employee>),
       ...(hireDate ? { hireDate: new Date(hireDate as unknown as string) } : {}),
+      ...(password ? { passwordHash: hashedPassword } : {}),
     };
 
     const updatedEmployee = await this.employeeRepository.update(id, patch);

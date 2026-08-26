@@ -18,16 +18,28 @@ This project is the backend of a modular internal ERP system designed for human 
   - JWT token-based authentication.
   - Role-Based Access Control (ADMIN, MANAGER, EMPLOYEE).
   - Secure password hashing using bcrypt.
+  - Password complexity enforcement (min 8 chars, uppercase, lowercase, digit/special char).
+  - Global HTTP request logging via `LoggingInterceptor`.
+  - Helmet integration for HTTP security headers.
+  - CORS configuration.
 - **👥 Employees Module**
   - Full management (CRUD) of company personnel.
+  - Self-service profile endpoints (`GET /employees/me`, `PATCH /employees/me`).
   - Role and department segregation.
+  - Soft delete to preserve database integrity and audit trail.
+  - Password update support with automatic hashing.
 - **🏖️ Leaves Module**
   - Leave requests submission by employees.
+  - Automatic enforcement of `employeeId` for non-privileged users (prevents IDOR).
+  - Overlapping leave request validation to prevent scheduling conflicts.
+  - Authorization checks: employees can only view their own leave requests.
   - Approval workflow (validation/rejection) by Managers or Admins.
 - **📊 Reporting Module**
   - Cross-module data aggregation (via appropriate Repository injection).
   - Headcount statistics by department.
   - Global overview of leave statuses.
+- **🌐 API Versioning**
+  - Global API prefix: all routes are served under `/api/v1/`.
 
 ## 🏛️ Architecture
 
@@ -75,7 +87,7 @@ Run the server in development mode:
 ```bash
 npm run start:dev
 ```
-The API will be accessible at `http://localhost:3000`.
+The API will be accessible at `http://localhost:3000/api/v1`.
 
 ### 5. Default Administrator Account
 To create an initial administrator access (required to create other employees), you can run the provided seed script:
@@ -87,12 +99,30 @@ npx ts-node scripts/seed.ts
 ## 📚 API Documentation (Swagger)
 
 Once the server is started, the complete Swagger documentation interface is available at the following address:
-👉 **http://localhost:3000/api/docs**
+👉 **http://localhost:3000/api/v1/docs**
 
 From this interface, you can visualize all endpoints, their parameters, and execute test requests (Don't forget to click the "Authorize" button to insert your JWT).
 
-## 🧪 Testing with Postman
+## 🧪 Testing
 
+### Unit Tests
+The project includes comprehensive unit tests for all core services:
+
+```bash
+# Run all tests
+npm run test
+
+# Run tests with coverage
+npm run test:cov
+```
+
+**Test coverage includes:**
+- `EmployeesService` — CRUD, email conflict detection, password hashing on update.
+- `LeavesService` — creation, date validation, overlapping requests, status updates, deletions.
+- `AuthService` — JWT authentication, invalid credentials handling.
+- `ReportingService` — department stats, leave stats, overall summary aggregation.
+
+### Postman Collection
 A ready-to-use Postman collection is provided at the root of the project: `erp_interne_postman_collection.json`.
 1. Import the JSON file into Postman.
 2. Open the `0. Authentification` folder and run the `Login` request with the administrator credentials.
@@ -105,3 +135,5 @@ A ready-to-use Postman collection is provided at the root of the project: `erp_i
 - **Authentication** (`@nestjs/jwt`, `@nestjs/passport`, `passport-jwt`, `bcrypt`)
 - **Validation** (`class-validator`, `class-transformer`)
 - **Documentation** (`@nestjs/swagger`, `swagger-ui-express`)
+- **Security** (`helmet`)
+- **Testing** (`jest`, `@nestjs/testing`)
