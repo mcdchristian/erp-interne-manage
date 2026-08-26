@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { LeavesService } from '../../application/services/leaves.service';
@@ -51,15 +52,36 @@ export class LeavesController {
   @ApiOperation({ summary: 'Get a single leave request by ID' })
   @ApiOkResponse({ description: 'Return the leave request.' })
   @ApiNotFoundResponse({ description: 'Leave request not found.' })
-  findOne(@Param('id') id: string) {
-    return this.leavesService.findOne(id);
+  async findOne(
+    @CurrentUser() user: any,
+    @Param('id') id: string,
+  ) {
+    const leave = await this.leavesService.findOne(id);
+    if (
+      user.role !== EmployeeRole.ADMIN &&
+      user.role !== EmployeeRole.MANAGER &&
+      leave.employeeId !== user.id
+    ) {
+      throw new ForbiddenException('You are not allowed to view this leave request');
+    }
+    return leave;
   }
 
   @Get('employee/:employeeId')
   @ApiOperation({ summary: 'Get all leave requests for a specific employee' })
   @ApiOkResponse({ description: 'Return leave requests for the employee.' })
   @ApiNotFoundResponse({ description: 'Employee not found.' })
-  findByEmployee(@Param('employeeId') employeeId: string) {
+  findByEmployee(
+    @CurrentUser() user: any,
+    @Param('employeeId') employeeId: string,
+  ) {
+    if (
+      user.role !== EmployeeRole.ADMIN &&
+      user.role !== EmployeeRole.MANAGER &&
+      employeeId !== user.id
+    ) {
+      throw new ForbiddenException('You are not allowed to view leaves for this employee');
+    }
     return this.leavesService.findByEmployee(employeeId);
   }
 
